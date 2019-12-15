@@ -26,7 +26,7 @@ public abstract class Command {
      */
     public abstract void execute(GuildMessageReceivedEvent event, String[] args);
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 }

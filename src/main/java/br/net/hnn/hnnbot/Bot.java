@@ -2,6 +2,7 @@ package br.net.hnn.hnnbot;
 
 import br.net.hnn.hnnbot.command.Command;
 import br.net.hnn.hnnbot.music.GlobalMusicManager;
+import br.net.hnn.hnnbot.spotify.SpotifyAPIWrapper;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -10,11 +11,14 @@ import java.util.HashMap;
 public class Bot extends ListenerAdapter {
     private final GlobalMusicManager globalMusicManager;
 
+    private final SpotifyAPIWrapper spotifyAPIWrapper;
+
     private final HashMap<String, Command> commandMap;
 
-    public Bot() {
+    public Bot(SpotifyAPIWrapper spotifyAPIWrapper) {
         this.globalMusicManager = new GlobalMusicManager();
         this.commandMap = new HashMap<>();
+        this.spotifyAPIWrapper = spotifyAPIWrapper;
     }
 
     @Override
@@ -44,5 +48,9 @@ public class Bot extends ListenerAdapter {
 
     public GlobalMusicManager getGlobalMusicManager() {
         return globalMusicManager;
+    }
+
+    public SpotifyAPIWrapper getSpotifyAPIWrapper() {
+        return spotifyAPIWrapper;
     }
 }
