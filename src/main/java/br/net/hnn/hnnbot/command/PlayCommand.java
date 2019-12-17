@@ -17,44 +17,36 @@ public class PlayCommand extends Command {
     @Override
     public void execute(GuildMessageReceivedEvent event, String[] args) {
         final var guild = event.getGuild();
-        final var member = event.getMember();
-
-        if (member == null) {
-            return;
-        }
-
-        final var voiceState = member.getVoiceState();
-
-        if (voiceState == null) {
-            return;
-        }
-
-        var voiceChannel = voiceState.getChannel();
+        final var voiceChannel = this.getSenderVoiceChannel(event);
 
         if (voiceChannel == null) {
             return;
         }
 
-        bot.getGlobalMusicManager().loadAndPlay(guild, voiceChannel, args[1], new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                event.getChannel().sendMessage("Loaded track: " + track.getInfo().title).queue();
-            }
+        bot.getGlobalMusicManager()
+            .loadAndPlay(guild, voiceChannel, args[1],
+                new AudioLoadResultHandler() {
+                    @Override
+                    public void trackLoaded(AudioTrack track) {
+                        event.getChannel()
+                            .sendMessage("Loaded track: " + track.getInfo().title)
+                            .queue();
+                    }
 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
+                    @Override
+                    public void playlistLoaded(AudioPlaylist playlist) {
 
-            }
+                    }
 
-            @Override
-            public void noMatches() {
-                event.getChannel().sendMessage("No tracks found").queue();
-            }
+                    @Override
+                    public void noMatches() {
+                        event.getChannel().sendMessage("No tracks found").queue();
+                    }
 
-            @Override
-            public void loadFailed(FriendlyException exception) {
+                    @Override
+                    public void loadFailed(FriendlyException exception) {
 
-            }
-        });
+                    }
+                });
     }
 }

@@ -14,7 +14,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Wrapper around the Spotify API (https://developer.spotify.com/documentation/web-api/). Extremely hacky and ad-hoc.
+ * Wrapper around the Spotify API (https://developer.spotify
+ * .com/documentation/web-api/). Extremely hacky and ad-hoc.
  * Based on Java 11's async HttpClient (maybe not the best of ideas) and Gson
  */
 public class SpotifyAPIWrapper {
@@ -27,10 +28,8 @@ public class SpotifyAPIWrapper {
     private final String spotifyId;
 
     private final String spotifySecret;
-
-    private Optional<SpotifyToken> spotifyToken;
-
     private final Gson gson;
+    private Optional<SpotifyToken> spotifyToken;
 
     public SpotifyAPIWrapper(String spotifyId, String spotifySecret) {
         this.httpClient = HttpClient.newHttpClient();
@@ -44,23 +43,25 @@ public class SpotifyAPIWrapper {
 
     private CompletableFuture<SpotifyToken> refreshAccessToken() {
         final var basicAuthConcat = this.spotifyId + ":" + this.spotifySecret;
-        final var base64Concat = Base64.getEncoder().encodeToString(basicAuthConcat.getBytes());
+        final var base64Concat = Base64.getEncoder()
+            .encodeToString(basicAuthConcat.getBytes());
 
         final var req = HttpRequest.newBuilder(URI.create(SPOTIFY_AUTH_URL + "/api/token"))
-                .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Authorization", "Basic " + base64Concat)
-                .build();
+            .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .header("Authorization", "Basic " + base64Concat)
+            .build();
 
         return httpClient.sendAsync(req, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(str -> this.gson.fromJson(str, ClientCredentialsResponse.class))
-                .thenApply(clientCredentialsResponse -> {
-                    final var token = new SpotifyToken(clientCredentialsResponse.accessToken, clientCredentialsResponse.expiresIn);
-                    this.spotifyToken = Optional.of(token);
+            .thenApply(HttpResponse::body)
+            .thenApply(str -> this.gson.fromJson(str, ClientCredentialsResponse.class))
+            .thenApply(clientCredentialsResponse -> {
+                final var token =
+                    new SpotifyToken(clientCredentialsResponse.accessToken, clientCredentialsResponse.expiresIn);
+                this.spotifyToken = Optional.of(token);
 
-                    return token;
-                });
+                return token;
+            });
     }
 
     /**
@@ -83,16 +84,17 @@ public class SpotifyAPIWrapper {
 
     public CompletableFuture<Album> getAlbum(String albumId) {
         return this.maybeRefreshToken()
-                .thenCompose(token -> {
-                    final var req = HttpRequest.newBuilder(URI.create(SPOTIFY_API_URL + "/v1/albums/" + albumId))
-                            .GET()
-                            .header("Authorization", "Bearer " + token.bearerToken)
-                            .build();
+            .thenCompose(token -> {
+                final var req =
+                    HttpRequest.newBuilder(URI.create(SPOTIFY_API_URL + "/v1/albums/" + albumId))
+                        .GET()
+                        .header("Authorization", "Bearer " + token.bearerToken)
+                        .build();
 
-                    return httpClient.sendAsync(req, HttpResponse.BodyHandlers.ofString());
-                })
-                .thenApply(HttpResponse::body)
-                .thenApply(str -> this.gson.fromJson(str, Album.class));
+                return httpClient.sendAsync(req, HttpResponse.BodyHandlers.ofString());
+            })
+            .thenApply(HttpResponse::body)
+            .thenApply(str -> this.gson.fromJson(str, Album.class));
     }
 
     private static class ClientCredentialsResponse {
@@ -104,10 +106,6 @@ public class SpotifyAPIWrapper {
 
         @SerializedName("expires_in")
         public int expiresIn;
-    }
-
-    public static class AlbumsResponse {
-
     }
 
     private static class SpotifyToken {

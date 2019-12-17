@@ -1,7 +1,9 @@
 // This file was mostly copied from LavaPlayer's demo-jda.
 // As such, it _probably_ falls under the Apache 2 license.
-// I'm not exactly sure how to proceed here, as these classes never had any copyright notice on them
-// So I'm going to comply with 4.b at least here: These files have been modified from demo-jda's original state
+// I'm not exactly sure how to proceed here, as these classes never had any
+// copyright notice on them
+// So I'm going to comply with 4.b at least here: These files have been
+// modified from demo-jda's original state
 
 package br.net.hnn.hnnbot.music;
 

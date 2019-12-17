@@ -35,61 +35,80 @@ public class GlobalMusicManager {
     private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         final var guildId = Long.parseLong(guild.getId());
 
-        final var musicManager = musicManagers.computeIfAbsent(guildId, k -> new GuildMusicManager(this.playerManager));
+        final var musicManager = musicManagers.computeIfAbsent(guildId,
+            k -> new GuildMusicManager(this.playerManager));
 
-        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+        guild.getAudioManager()
+            .setSendingHandler(musicManager.getSendHandler());
 
         return musicManager;
     }
 
-    public void loadAndPlay(final Guild guild, final VoiceChannel voiceChannel, final String trackUrl, AudioLoadResultHandler audioLoadResultHandler) {
+    public void loadAndPlay(final Guild guild,
+                            final VoiceChannel voiceChannel,
+                            final String trackUrl,
+                            AudioLoadResultHandler audioLoadResultHandler) {
         final var musicManager = getGuildAudioPlayer(guild);
 
-        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                audioLoadResultHandler.trackLoaded(track);
+        playerManager.loadItemOrdered(musicManager, trackUrl,
+            new AudioLoadResultHandler() {
+                @Override
+                public void trackLoaded(AudioTrack track) {
+                    audioLoadResultHandler.trackLoaded(track);
 
-                connectToVoiceChannel(guild, voiceChannel);
-                enqueueTrack(musicManager, track);
-            }
+                    connectToVoiceChannel(guild, voiceChannel);
+                    enqueueTrack(musicManager, track);
+                }
 
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist) {
-                audioLoadResultHandler.playlistLoaded(playlist);
+                @Override
+                public void playlistLoaded(AudioPlaylist playlist) {
+                    audioLoadResultHandler.playlistLoaded(playlist);
 
 
-                connectToVoiceChannel(guild, voiceChannel);
-                if (playlist.isSearchResult()) {
-                    // we're just enqueing the first search result, which may not be a great idea
-                    enqueueTrack(musicManager, playlist.getTracks().get(0));
-                } else {
-                    for (var track : playlist.getTracks()) {
-                        enqueueTrack(musicManager, track);
+                    connectToVoiceChannel(guild, voiceChannel);
+                    if (playlist.isSearchResult()) {
+                        // we're just enqueing the first search result, which may
+                        // not be a great idea
+                        enqueueTrack(musicManager, playlist.getTracks().get(0));
+                    } else {
+                        for (var track : playlist.getTracks()) {
+                            enqueueTrack(musicManager, track);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void noMatches() {
-            }
+                @Override
+                public void noMatches() {
+                }
 
-            @Override
-            public void loadFailed(FriendlyException exception) {
-            }
-        });
+                @Override
+                public void loadFailed(FriendlyException exception) {
+                }
+            });
+    }
+
+    public void loadTrack(@NotNull final Guild guild, @NotNull final VoiceChannel voiceChannel, @NotNull final AudioTrack track) {
+        final var musicManager = getGuildAudioPlayer(guild);
+
+        connectToVoiceChannel(guild, voiceChannel);
+        enqueueTrack(musicManager, track);
     }
 
     private void connectToVoiceChannel(Guild guild, VoiceChannel channel) {
         guild.getAudioManager().openAudioConnection(channel);
     }
 
-    private void enqueueTrack(GuildMusicManager musicManager, AudioTrack track) {
+    private void enqueueTrack(GuildMusicManager musicManager,
+                              AudioTrack track) {
         musicManager.scheduler.queue(track);
     }
 
     public void skipTrack(final Guild guild) {
         final var musicManager = getGuildAudioPlayer(guild);
         musicManager.scheduler.nextTrack();
+    }
+
+    public AudioPlayerManager getPlayerManager() {
+        return playerManager;
     }
 }

@@ -13,23 +13,23 @@ import java.util.Objects;
 public class Main {
     public static void main(String[] args) throws Exception {
         final var dotenv = Dotenv.configure()
-                .ignoreIfMissing()
-                .load();
+            .ignoreIfMissing()
+            .load();
 
         final var bot = new Bot(
-                new SpotifyAPIWrapper(
-                        dotenv.get("SPOTIFY_ID"),
-                        dotenv.get("SPOTIFY_SECRET")
-                )
+            new SpotifyAPIWrapper(
+                dotenv.get("SPOTIFY_ID"),
+                dotenv.get("SPOTIFY_SECRET")
+            )
         );
 
         bot.registerCommand(new PlayCommand(bot));
         bot.registerCommand(new SpotifyAlbumCommand(bot));
 
         new JDABuilder(AccountType.BOT)
-                .setToken(dotenv.get("BOT_TOKEN"))
-                .addEventListeners(bot)
-                .setActivity(Activity.playing(Objects.requireNonNull(dotenv.get("ACTIVITY_PLAYING"))))
-                .build();
+            .setToken(dotenv.get("BOT_TOKEN"))
+            .addEventListeners(bot)
+            .setActivity(Activity.playing(Objects.requireNonNull(dotenv.get("ACTIVITY_PLAYING"))))
+            .build();
     }
 }

@@ -24,4 +24,8 @@ dependencies {
     runtimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 }
 
+shadowJar {
+    minimize()
+}
+
 mainClassName = 'br.net.hnn.hnnbot.Main'

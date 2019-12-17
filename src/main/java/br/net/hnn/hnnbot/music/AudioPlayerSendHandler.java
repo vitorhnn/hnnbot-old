@@ -1,7 +1,9 @@
 // This file was mostly copied from LavaPlayer's demo-jda.
 // As such, it _probably_ falls under the Apache 2 license.
-// I'm not exactly sure how to proceed here, as these classes never had any copyright notice on them
-// So I'm going to comply with 4.b at least here: These files have been modified from demo-jda's original state
+// I'm not exactly sure how to proceed here, as these classes never had any
+// copyright notice on them
+// So I'm going to comply with 4.b at least here: These files have been
+// modified from demo-jda's original state
 
 package br.net.hnn.hnnbot.music;
 
@@ -12,8 +14,10 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 import java.nio.ByteBuffer;
 
 /**
- * This is a wrapper around AudioPlayer which makes it behave as an AudioSendHandler for JDA. As JDA calls canProvide
- * before every call to provide20MsAudio(), we pull the frame in canProvide() and use the frame we already pulled in
+ * This is a wrapper around AudioPlayer which makes it behave as an
+ * AudioSendHandler for JDA. As JDA calls canProvide
+ * before every call to provide20MsAudio(), we pull the frame in canProvide()
+ * and use the frame we already pulled in
  * provide20MsAudio().
  */
 public class AudioPlayerSendHandler implements AudioSendHandler {
